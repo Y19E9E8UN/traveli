@@ -1,18 +1,43 @@
-import React, { forwardRef, ChangeEvent } from 'react';
+import React, { forwardRef, ChangeEvent, KeyboardEvent } from 'react';
+import './style.css';
 
-interface Props {
-  // Props에 필요한 속성들을 정의해주세요
+// Props 정의
+interface InputBoxProps {
+  title: string;
+  placeholder: string;
+  type: 'text' | 'password';
+  value: string;
+  isErrMessage?: boolean;
+  buttonTitle?: string;
+  message?: string;
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
+  onKeydown?: (event: KeyboardEvent<HTMLInputElement>) => void;
+  onButtonClick?: () => void;
 }
 
-const InputBox = forwardRef<HTMLInputElement, Props>((props: Props, ref) => {
+const InputBox = forwardRef<HTMLInputElement, InputBoxProps>((props: InputBoxProps, ref) => {
+  // Props 사용
+  const { title, placeholder, type, value, isErrMessage, buttonTitle, message, onChange, onKeydown, onButtonClick } = props;
+
+  const buttonClass = `input-box-button${value === '' ? '-disable' : ''}`;
+  const messageClass = isErrMessage ? 'input-box-message-err' : 'input-box-message';
+
   return (
     <div className='input-box'>
-      <div className='input-box-title'>{'아이디'}</div>
+      <div className='input-box-title'>{title}</div>
       <div className='input-box-content'>
-        <input className='input-box-input' ref={ref} />
-        <div className='input-box-button'>{'중복 확인'}</div>
+        <div className='input-box-body'>
+          <input ref={ref} className='input-box-input' placeholder={placeholder} type={type} value={value} onChange={onChange} onKeyDown={onKeydown}/>
+          {buttonTitle !== undefined && onButtonClick !== undefined && (
+            <div className={buttonClass} onClick={onButtonClick}>
+              {buttonTitle}
+            </div>
+          )}
+        </div>
+        {message !== undefined && <div className={messageClass}>{message}</div>}
       </div>
-      <div className='input-box-message'>{'사용 가능한 아이디 입니다'}</div>
     </div>
   );
 });
+
+export default InputBox;
